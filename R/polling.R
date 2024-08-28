@@ -24,7 +24,7 @@ set_event_polling <- function() {
     }
 
     # re-schedule the function to run again after the interval
-    later::later(func = poll_fn, delay = polling_interval)
+    later::later(func = poll_fn, delay = wakatimer_env$polling_interval)
   }
 
   # start polling loop
@@ -96,9 +96,8 @@ file_saved <- function(current_file) {
   logger::log_debug("Last hearbeat time {last_heartbeat_time}")
   logger::log_debug("{current_file} last modify time {last_modify_time}")
   if (last_modify_time > last_heartbeat_time) {
-    logger::log_debug("File saved")
+    logger::log_debug("{current_file} saved")
     return(TRUE)
   }
-  logger::log_debug("File not saved")
   return(FALSE)
 }

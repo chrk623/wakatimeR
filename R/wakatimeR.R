@@ -1,3 +1,5 @@
+wakatimer_env <- new.env()
+last_heartbeat <- new.env()
 last_known_content <- new.env()
 
 #' Start wakatimeR for RStudio
@@ -41,16 +43,18 @@ start_wakatime <- function(
 
   # initalize
   logger::log_debug("Initializing wakatimeR")
-  binary_path <<- binary_path_check(binary_path = binary_path)
-  heartbeat_interval <<- heartbeat_interval
-  polling_interval <<- polling_interval
-  last_heartbeat <<- list(file = NULL, time = Sys.time() - heartbeat_interval)
+  wakatimer_env$binary_path <- binary_path_check(binary_path = binary_path)
+  wakatimer_env$heartbeat_interval <- heartbeat_interval
+  wakatimer_env$polling_interval <- polling_interval
 
-  api_key <<- get_wakatime_api_key(config_path = config_path)
-  if (is.null(api_key)) {
+  last_heartbeat$file <- NULL
+  last_heartbeat$time <- Sys.time() - wakatimer_env$heartbeat_interval
+
+  wakatimer_env$api_key <- get_wakatime_api_key(config_path = config_path)
+  if (is.null(wakatimer_env$api_key)) {
     logger::log_warn("WakaTime API key not found in {config_path}")
-    api_key <<- readline(prompt = "Enter your WakaTime API Key: ")
-    set_wakatime_api_key(api_key = api_key, config_path = config_path)
+    wakatimer_env$api_key <- readline(prompt = "Enter your WakaTime API Key: ")
+    set_wakatime_api_key(api_key = wakatimer_env$api_key, config_path = config_path)
     logger::log_info("WakaTime API key has been set.")
   } else {
     logger::log_info("WakaTime API key found in {config_path}.")

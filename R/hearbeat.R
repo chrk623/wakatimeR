@@ -17,11 +17,10 @@ send_heartbeat <- function(file_path, is_write = FALSE) {
   # construct command to send to wakatime
   command <- sprintf(
     "%s --guess-language --entity %s %s --key %s --plugin %s %s",
-    binary_path,
+    wakatimer_env$binary_path,
     shQuote(tools::file_path_as_absolute(file_path)),
     ifelse(is_write, "--write", ""),
-    # shQuote(get_wakatime_api_key()),
-    shQuote(api_key),
+    shQuote(wakatimer_env$api_key),
     shQuote(ua),
     project_name_arg
   )
@@ -31,16 +30,16 @@ send_heartbeat <- function(file_path, is_write = FALSE) {
   system(command, wait = FALSE)
 
   # update last heartbeat info
-  last_heartbeat$file <<- file_path
-  last_heartbeat$time <<- Sys.time()
+  last_heartbeat$file <- file_path
+  last_heartbeat$time <- Sys.time()
   logger::log_info("Sent heartbeat for {file_path} (write: {is_write}).")
 }
 
 
 should_send_heartbeat <- function(file_path, is_write) {
-  if (!is_write && !is.null(last_heartbeat$file) &&
+  if (!is_write && !is.null(wakatimer_env$file) &&
     last_heartbeat$file == file_path &&
-    (Sys.time() - last_heartbeat$time) < heartbeat_interval) {
+    (Sys.time() - last_heartbeat$time) < wanatimer_env$heartbeat_interval) {
     logger::log_debug("Skipping heartbeat for {file_path}, last heartbeat was within {heartbeat_interval} secs.")
     return(FALSE)
   }
