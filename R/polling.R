@@ -96,7 +96,6 @@ file_saved <- function(current_file) {
   logger::log_debug("Last hearbeat time {last_heartbeat_time}")
   logger::log_debug("{current_file} last modify time {last_modify_time}")
   if (last_modify_time > last_heartbeat_time) {
-    logger::log_debug("{current_file} saved")
     return(TRUE)
   }
   return(FALSE)
